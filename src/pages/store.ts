@@ -3,11 +3,11 @@ import { create } from 'zustand'
 
 interface spanState {
     spanIndex: number
-    increase: () => void
+    set: (index: number) => void
   }
 
 
 export const useStore = create<spanState>()((set) => ({
-  spanIndex: 0,
-  increase: () => set((state) => ({ spanIndex: state.spanIndex + 1 })),
+  spanIndex: -1,
+  set: (index: number) => set((state) => ({ spanIndex: state.spanIndex = index })),
 }))

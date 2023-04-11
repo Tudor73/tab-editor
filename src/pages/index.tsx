@@ -10,18 +10,15 @@ let count = 0
 const SpanComponent = ({
   value,
   index,
-  showInputParent,
-  onShowInput,
 }: {
   value: string;
   index: number;
-  showInputParent: number;
-  onShowInput: (val: number) => void;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [showInput, setShowInput] = useState(false);
 
   const [index1, setIndex1] = useState(0)
+
+  const store = useStore()
 
   useEffect(() => {
     count += 1
@@ -31,9 +28,6 @@ const SpanComponent = ({
     }
   }, [])
 
-  // const spanIndex   = useStore(state => state.spanIndex)
-
-
   
   if (index === lengthOfTabString) {
     return <span className="block"></span>;
@@ -41,12 +35,13 @@ const SpanComponent = ({
   return (
     <span
       onClick={(e) => {
-      console.log(index1)
+        store.set(index1)
+        console.log(store.spanIndex)
       }}
     >
       {value}
 
-      {showInputParent ===index && <input type="text" ref={inputRef} className=" w-6 h-6 outline" />}
+      {store.spanIndex == index1  && <input type="text" ref={inputRef} className=" w-6 h-6 outline" />}
     </span>
   );
 };
@@ -62,8 +57,6 @@ const TabComponent = ({ tab }: { tab: string[][];  }) => {
               value={str2}
               index={idx2}
               key={idx2}
-              showInputParent={showInputIndex}
-              onShowInput={(val: number) => setShowInputIndex(val)}
             />
           );
         });
