@@ -1,64 +1,56 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import {useStore} from "./store";
-
+import { useStore } from "./store";
 
 const lengthOfTabString = 30;
 
-let count = 0
+let count = 0;
 
-
-const SpanComponent = ({
-  value,
-  index,
-}: {
-  value: string;
-  index: number;
-}) => {
+const SpanComponent = ({ value, index }: { value: string; index: number }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [index1, setIndex1] = useState(0)
+  const [index1, setIndex1] = useState(0);
 
-  const store = useStore()
+  const spanIndexState = useStore(state => state.spanIndex);
+  const setSpanIndexState = useStore(state => state.setSpanIndex);
+  const editMode = useStore(state => state.editMode);
 
   useEffect(() => {
-    count += 1
-    setIndex1(count)
+    count += 1;
+    setIndex1(count);
     return () => {
-      count -=1
-    }
-  }, [])
+      count -= 1;
+    };
+  }, []);
 
-  
   if (index === lengthOfTabString) {
     return <span className="block"></span>;
   }
   return (
     <span
       onClick={(e) => {
-        store.set(index1)
-        console.log(store.spanIndex)
+
+        if(!editMode) {
+          return;
+        }
+        setSpanIndexState(index1);
+        console.log(spanIndexState);
       }}
     >
       {value}
 
-      {store.spanIndex == index1  && <input type="text" ref={inputRef} className=" w-6 h-6 outline" />}
+      {spanIndexState == index1 && (
+        <input type="text" ref={inputRef} className=" w-6 h-6 outline relative right-4 " defaultValue={value} />
+      )}
     </span>
   );
 };
 
-const TabComponent = ({ tab }: { tab: string[][];  }) => {
-  const [showInputIndex, setShowInputIndex] = useState(-1);
+const TabComponent = ({ tab }: { tab: string[][] }) => {
   return (
-  <div className=" text-md font-mono mt-10">
+    <div className=" text-md font-mono mt-10">
       {tab.map((str, idx) => {
         return str.map((str2, idx2) => {
-          return (
-            <SpanComponent
-              value={str2}
-              index={idx2}
-              key={idx2}
-            />
-          );
+          return <SpanComponent value={str2} index={idx2} key={idx2} />;
         });
       })}
     </div>
@@ -106,13 +98,13 @@ function generateTab(notes: number[][]) {
 export default function Home() {
   let file: File;
 
-
-
   const [renderTab, setRenderTab] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [tabs, setTabs] = useState<string[][][]>([]);
   const [value, setValue] = useState("");
 
+  const editMode = useStore((state) => state.editMode);
+  const setEditMode = useStore((state) => state.setEditMode);
+  const setSpanIndexState = useStore((state) => state.setSpanIndex);
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       file = e.target.files[0];
@@ -120,11 +112,15 @@ export default function Home() {
   };
 
   const enterEditMode = () => {
-    setRenderTab(false);
-    setEditMode(true);
+    if (editMode) {
+      setSpanIndexState(-1);
+    }
+    setEditMode(!editMode);
   };
 
   const handleUploadFile = () => {
+    setEditMode(false)
+    setSpanIndexState(-1)
     const formData = new FormData();
     formData.append("file", file);
     console.log(formData.get("file"));
@@ -169,7 +165,7 @@ export default function Home() {
 
         {renderTab &&
           tabs.map((tab, idx) => {
-            return <TabComponent tab={tab} key={idx}  />;
+            return <TabComponent tab={tab} key={idx} />;
           })}
 
         {renderTab && (
