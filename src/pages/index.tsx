@@ -7,6 +7,7 @@ let count = 0;
 
 
 let tabState: string[] = []
+let fileName : string = ""
 const SpanComponent = ({ value, index }: { value: string; index: number }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -130,6 +131,8 @@ export default function Home() {
   const editMode = useStore((state) => state.editMode);
   const setEditMode = useStore((state) => state.setEditMode);
   const setSpanIndexState = useStore((state) => state.setSpanIndex);
+
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       file = e.target.files[0];
@@ -137,9 +140,10 @@ export default function Home() {
   };
 
   const handleSaveFile = () => {
+    console.log(fileName)
     fetch("http://localhost:5000/save", { 
       method: "POST",
-      body: JSON.stringify({tab: tabState}),
+      body: JSON.stringify({tab: tabState, fileName: fileName}),
       headers: {
         "Content-Type": "application/json"
       }
@@ -161,7 +165,7 @@ export default function Home() {
     setSpanIndexState(-1)
     const formData = new FormData();
     formData.append("file", file);
-    console.log(formData.get("file"));
+    fileName = file.name
     fetch("http://localhost:5000/upload", {
       method: "POST",
       body: formData,
