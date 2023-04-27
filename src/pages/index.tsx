@@ -136,6 +136,19 @@ export default function Home() {
     }
   };
 
+  const handleSaveFile = () => {
+    fetch("http://localhost:5000/save", { 
+      method: "POST",
+      body: JSON.stringify({tab: tabState}),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then((res) => res.json()).then((data) => {
+      console.log(data)
+    }).catch((err) => console.log(err))
+  }
+
+
   const enterEditMode = () => {
     if (editMode) {
       setSpanIndexState(-1);
@@ -201,7 +214,7 @@ export default function Home() {
           </button>
           {
             !editMode && (
-              <button className="bg-green-300 px-4 py-2 rounded-lg ml-2">Save</button>
+              <button className="bg-green-300 px-4 py-2 rounded-lg ml-2"onClick={handleSaveFile}>Save</button>
             )
           }
           </div>
