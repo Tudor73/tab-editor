@@ -5,8 +5,15 @@ const lengthOfTabString = 30;
 
 let count = 0;
 
+
+let tabState: string[] = []
 const SpanComponent = ({ value, index }: { value: string; index: number }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
+
+  
+
+  const [inputValue, setInputValue] = useState(value);
 
   const [index1, setIndex1] = useState(0);
 
@@ -16,13 +23,15 @@ const SpanComponent = ({ value, index }: { value: string; index: number }) => {
 
   useEffect(() => {
     count += 1;
+    tabState.push(value)
     setIndex1(count);
     return () => {
-      count -= 1;
+      count -= 1; 
+      tabState.pop()
     };
   }, []);
 
-  if (index === lengthOfTabString) {
+  if (value ==="") {
     return <span className="block"></span>;
   }
   return (
@@ -32,14 +41,22 @@ const SpanComponent = ({ value, index }: { value: string; index: number }) => {
         if(!editMode) {
           return;
         }
+        console.log(tabState[index1-1])
         setSpanIndexState(index1);
-        console.log(spanIndexState);
       }}
     >
-      {value}
+      {inputValue}
 
       {spanIndexState == index1 && (
-        <input type="text" ref={inputRef} className=" w-6 h-6 outline relative right-4 " defaultValue={value} />
+        <input type="text" ref={inputRef} className=" w-6 h-6 outline relative right-4 " defaultValue={inputValue} onKeyDown={(e) => {
+          if(e.key === "Enter") {
+            if(inputRef.current) {
+              setInputValue(inputRef.current.value);
+              tabState[index1-1] = inputRef.current.value;
+              setSpanIndexState(-1);
+            }
+          }
+        }}/>
       )}
     </span>
   );
@@ -72,26 +89,34 @@ const TabComponent = ({ tab }: { tab: string[][] }) => {
 // };
 
 function generateTab(notes: number[][]) {
-  let tab = [["e | "], ["B | "], ["G | "], ["D | "], ["A | "], ["E | "]];
+  let tab = [["e | "],[""], ["B | "], [""], ["G | "] ,[""], ["D | "], [""], ["A | "],[""],  ["E | "], [""]];
 
   let idx = 1;
 
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i+=2) {
     for (let j = 0; j < lengthOfTabString; j++) {
       let char = "-";
       tab[i].push(char);
     }
   }
   notes.forEach((val, index) => {
+    
     let string = val[0];
     let fret = val[1];
 
-    let str1 = tab[string];
+    let str1 
+    if (string === 0) {
+    str1 = tab[string];
+    }
+    else {
+      str1 = tab[string * 2 -2 ]
+    }
     str1[idx] = String(fret);
+    if (fret >= 10) {
+      str1.pop()
+    }
     idx += 3;
   });
-
-  console.log(tab);
   return tab;
 }
 
@@ -160,7 +185,7 @@ export default function Home() {
           Generate Tab
         </button>
       </div>
-      <div className="">
+      <div className={ "px-4" + (editMode ? ' border-2 border-solid border-red-400' : "")}>
         <h1>Tab: </h1>
 
         {renderTab &&
@@ -169,9 +194,18 @@ export default function Home() {
           })}
 
         {renderTab && (
+          <div className="py-4">
+
           <button className="bg-gray-300 px-4 py-2 rounded-lg" onClick={enterEditMode}>
-            Edit
+            {!editMode ? "Edit" : "Done"}
           </button>
+          {
+            !editMode && (
+              <button className="bg-green-300 px-4 py-2 rounded-lg ml-2">Save</button>
+            )
+          }
+          </div>
+
         )}
       </div>
     </div>

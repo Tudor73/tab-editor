@@ -1,5 +1,16 @@
 import { create } from 'zustand'
 
+interface tabState {
+    tab: number[][]
+
+}
+
+
+  
+
+
+
+
 
 interface spanState {
     spanIndex: number
