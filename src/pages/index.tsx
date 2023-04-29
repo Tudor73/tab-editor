@@ -9,11 +9,8 @@ let count = 0;
 let tabState: string[] = []
 let fileName : string = ""
 const SpanComponent = ({ value, index }: { value: string; index: number }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-
   
-
+  const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(value);
 
   const [index1, setIndex1] = useState(0);
