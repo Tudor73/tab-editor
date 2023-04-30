@@ -14,6 +14,7 @@ export default function Track() {
     const { id } = router.query;
     const [track, setTrack] = useState<Track>()
 
+    const [audio, setAudio] = useState<HTMLAudioElement>()
 
     const findAllSpaces = (str: string) => {
         const spaces = []
@@ -38,10 +39,37 @@ export default function Track() {
         console.log(track)
     } 
 
+    const loadWavFile = async ()  => {
+        const response = await fetch(`http://localhost:5000/tracks/${id}/wav`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const chunks = []
+        const reader =  response?.body?.getReader();
+        while (true) {
+          const { done, value } = await reader!.read();
+          if (done) {
+            // Do something with last chunk of data then exit reader
+            break
+            return;
+          }
+        chunks.push(value)
+          // Otherwise do something here to process current chunk
+        }
+    
+        const blob = new Blob(chunks, {
+            type: 'audio/wav'
+        })
+        setAudio(new Audio(URL.createObjectURL(blob)))
+        return blob
+    }
     useEffect(() => {        
-        if(id)
-        loadTrack();
-
+        if(id){
+            loadTrack();
+            loadWavFile();
+        }
     }, [router.isReady])
 
 
@@ -50,6 +78,11 @@ export default function Track() {
         <div>
             <h1 className="text-4xl font-bold">Track</h1>
             <h1></h1>
+            <button onClick={() => {
+                audio?.play()
+            }}>PLAYYYY</button>
         </div>
     )
+ 
 }
+
