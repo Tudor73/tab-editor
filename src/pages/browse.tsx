@@ -5,6 +5,7 @@ type Track = {
   id: string;
   name: string;
   username: string;
+  songName: string;
 };
 
 export default function Browse() {
@@ -53,8 +54,8 @@ export default function Browse() {
                 handleClick(track.id);
               }}
             >
-              <h1 className="text-2xl font-bold">{track.name}</h1>
-              <h2 className="text-xl font-bold">{track.username}</h2>
+              <h1 className="text-xl ">Song name: {track.name}</h1>
+              <h2 className="">Added by:  {track.username}</h2>
             </div>
           );
         })}

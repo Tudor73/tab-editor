@@ -239,7 +239,7 @@ export default function Home() {
 
         {renderTab && <input type="text" value={songName} onChange={(e) => {
             setSongName(e.target.value);
-          }} placeholder="Name" className="shadow border rounded p-2 mt-4"/>}
+          }} placeholder="SongName" className="shadow border rounded p-2 mt-4 ml-4"/>}
 
         {renderTab && (
           <div className="py-4">
