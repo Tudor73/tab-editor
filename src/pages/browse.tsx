@@ -30,16 +30,24 @@ export default function Browse() {
   const handleClick = (id: string) => {
     router.push(`/browse/${id}`);
   };
-  if (tracks.length === 0) return <h1>Loading...</h1>;
+  if (!tracks) return <h1>Loading...</h1>;
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Browse</h1>
-      <div>
+    <div className="flex flex-col gap-4 ">
+      <h1 className="text-4xl text-center">Browse songs</h1>
+      <button
+        className="m-auto bg-gray-300 px-4 py-2 rounded-lg"
+        onClick={() => {
+          router.push("/");
+        }}
+      >
+        Add song
+      </button>
+      <div className="w-1/3 m-auto">
         {tracks.map((track, idx) => {
           return (
             <div
-              className="border-2 border-black rounded-lg p-2 my-2"
+              className="border-2 border-gray-400 rounded-lg p-2 my-2 cursor-pointer hover:border-gray-700 "
               key={idx}
               onClick={() => {
                 handleClick(track.id);
